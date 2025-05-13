@@ -343,8 +343,8 @@ if __name__ == '__main__':
     s_cry = Slider(slider_axes[7], 'Cam Rot Y', -180, 180, valinit=0)
     s_crx = Slider(slider_axes[8], 'Cam Rot X', -180, 180, valinit=0)
 
-    s_fy = Slider(slider_axes[9], 'Focal Y', 100, 500, valinit=1.0)
-    s_fx = Slider(slider_axes[10], 'Focal X', 100, 500, valinit=1.0)
+    s_fy = Slider(slider_axes[9], 'Focal Y', 100, 500, valinit=250)
+    s_fx = Slider(slider_axes[10], 'Focal X', 100, 500, valinit=250)
     
     # ***** Order must match unpacking in CubeProjection.__init__ *****
     sliders_tuple = (s_tx, s_ty, 
