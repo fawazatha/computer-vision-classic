@@ -20,11 +20,11 @@ class CubeProjection:
         Initialize CubeProjection.
         
         Args:
-        - cube_world: (8, 3) array of cube vertices in world space.
-        - cube_edges: list of tuples defining edge connections.
-        - cx, cy: principal point coordinates.
-        - ax: matplotlib axes for drawing.
-        - sliders: tuple of 11 sliders for camera, cube controls and focal length.
+            cube_world: (8, 3) array of cube vertices in world space.
+            cube_edges: list of tuples defining edge connections.
+            cx, cy: principal point coordinates.
+            ax: matplotlib axes for drawing.
+            sliders: tuple of 11 sliders for camera, cube controls and focal length.
         """
         self.cube_world = cube_world 
         self.cube_edges = cube_edges
@@ -41,10 +41,10 @@ class CubeProjection:
         Get the camera extrinsic matrix as a 4x4 homogeneous transformation matrix.
 
         Args:
-        - s_tx, s_ty, s_tz: sliders representing camera translation.
+            s_tx, s_ty, s_tz: sliders representing camera translation.
 
         Returns:
-        - extrinsic_4x4: (4, 4) homogeneous transformation matrix.
+            extrinsic_4x4: (4, 4) homogeneous transformation matrix.
         """
         # ***** Camera position in world space *****
         C_w = np.array([s_tx.val, s_ty.val, s_tz.val])
