@@ -14,31 +14,27 @@ class CubeProjection:
     def __init__(self, 
                  cube_world: np.ndarray, 
                  cube_edges: list, 
-                 fx: float, fy: float, 
-                 cx: float, cy: float, 
-                 ax, sliders: tuple):
+                 ax, cx: float, cy: float, 
+                 sliders: tuple):
         """
         Initialize CubeProjection.
         
         Args:
         - cube_world: (8, 3) array of cube vertices in world space.
         - cube_edges: list of tuples defining edge connections.
-        - fx, fy: focal lengths.
         - cx, cy: principal point coordinates.
         - ax: matplotlib axes for drawing.
-        - sliders: tuple of 6 sliders for camera and cube controls.
+        - sliders: tuple of 11 sliders for camera, cube controls and focal length.
         """
         self.cube_world = cube_world 
         self.cube_edges = cube_edges
-        self.fx = fx 
-        self.fy = fy 
+        self.ax = ax
         self.cx = cx 
         self.cy = cy 
-        self.ax = ax
-        
         (self.s_tx, self.s_ty, self.s_tz, 
         self.s_rx, self.s_ry, self.s_rz, 
-        self.s_crx, self.s_cry, self.s_crz) = sliders
+        self.s_crx, self.s_cry, self.s_crz,  
+        self.s_fy, self.s_fx) = sliders
 
     def get_extrinsics(self, s_tx: Slider, s_ty: Slider, s_tz: Slider) -> np.ndarray:
         """
@@ -240,7 +236,7 @@ class CubeProjection:
             val (float | None): Value from the slider callback (unused).
         """
         # ***** Compute projection matrix *****
-        K = self.get_intrinsic_matrix(self.fx, self.fy, self.cx, self.cy)
+        K = self.get_intrinsic_matrix(self.s_fx.val, self.s_fy.val, self.cx, self.cy)
         extrinsics = self.get_extrinsics(self.s_tx, self.s_ty, self.s_tz)
 
         # ***** Apply rotation to cube based on sliders *****
@@ -281,6 +277,7 @@ class CubeProjection:
         self.ax.set_aspect('equal')
         self.ax.set_title('Projected Cube')
 
+
 if __name__ == '__main__':
     # ***** Cube Definition *****
     cube_vertices_world = np.array([
@@ -294,72 +291,72 @@ if __name__ == '__main__':
     ]
 
     # ***** Camera intrinsics *****
-    fx, fy = 500, 500
     cx, cy = 320, 240
 
-    # ***** Setup figure and sliders *****
-    fig, ax = plt.subplots(figsize=(8, 7)) # Increased figure height slightly if needed
+    # ***** Setup figure *****
+    fig, ax = plt.subplots(figsize=(8, 9))  # Main plot
+    plt.subplots_adjust(left=0.1, right=0.9, top=0.95)
 
-    # ***** Define layout parameters for sliders *****
+    # ***** Slider layout config *****
     slider_params = {
         'left': 0.25,
         'width': 0.65,
         'height': 0.03,
-        'spacing_v': 0.005, # Reduced vertical spacing between sliders
+        'spacing_v': 0.005,
         'bottom_margin': 0.02,
         'top_margin': 0.03,
     }
-    num_sliders = 9
-    slider_total_height_per_slider = slider_params['height'] + slider_params['spacing_v']
     
-    # ***** Calculate y positions for slider axes (bottom-up) *****
+    num_sliders = 11
+    slider_total_height = (
+        num_sliders * (slider_params['height'] + slider_params['spacing_v']) +
+        slider_params['top_margin'] +
+        slider_params['bottom_margin']
+    )
+
+    # ***** Set bottom of main plot area so it doesn't overlap sliders *****
+    plt.subplots_adjust(bottom=slider_total_height)
+
+    # ***** Calculate Y positions (top-down visually, so reversed index) *****
     slider_y_bottoms = [
-        slider_params['bottom_margin'] + i * slider_total_height_per_slider
+        slider_params['bottom_margin'] + i * (slider_params['height'] + slider_params['spacing_v'])
         for i in range(num_sliders)
     ]
 
-    # ***** Determine the bottom of the main plot area in figure coordinates *****
-    main_plot_bottom = (
-        slider_y_bottoms[-1] + 
-        slider_params['height'] + 
-        slider_params['top_margin']
-    )
-    
-    plt.subplots_adjust(left=0.1, right=0.9, bottom=main_plot_bottom, top=0.95)
-    # ***** Slider axes (from top of screen to bottom) *****
-    # ***** Higher index in slider_y_bottoms means higher y-coordinate (visually higher) *****
-    ax_crx = plt.axes([slider_params['left'], slider_y_bottoms[8], slider_params['width'], slider_params['height']])
-    ax_cry = plt.axes([slider_params['left'], slider_y_bottoms[7], slider_params['width'], slider_params['height']])
-    ax_crz = plt.axes([slider_params['left'], slider_y_bottoms[6], slider_params['width'], slider_params['height']])
+    # ***** Slider axes from bottom up *****
+    slider_axes = []
+    for i in range(num_sliders):
+        y = slider_y_bottoms[i]
+        ax_slider = plt.axes([slider_params['left'], y, slider_params['width'], slider_params['height']])
+        slider_axes.append(ax_slider)
 
-    ax_tx = plt.axes([slider_params['left'], slider_y_bottoms[5], slider_params['width'], slider_params['height']])
-    ax_ty = plt.axes([slider_params['left'], slider_y_bottoms[4], slider_params['width'], slider_params['height']])
-    ax_tz = plt.axes([slider_params['left'], slider_y_bottoms[3], slider_params['width'], slider_params['height']])
-    
-    ax_rx = plt.axes([slider_params['left'], slider_y_bottoms[2], slider_params['width'], slider_params['height']])
-    ax_ry = plt.axes([slider_params['left'], slider_y_bottoms[1], slider_params['width'], slider_params['height']])
-    ax_rz = plt.axes([slider_params['left'], slider_y_bottoms[0], slider_params['width'], slider_params['height']])
-    
-    # ***** Create sliders *****
-    s_crx = Slider(ax_crx, 'Cam Rot X', -180, 180, valinit=0)
-    s_cry = Slider(ax_cry, 'Cam Rot Y', -180, 180, valinit=0)
-    s_crz = Slider(ax_crz, 'Cam Rot Z', -180, 180, valinit=0)
+    # ***** Setup sliders *****
+    s_rz = Slider(slider_axes[0], 'Cube Rot Z', -180, 180, valinit=0)
+    s_ry = Slider(slider_axes[1], 'Cube Rot Y', -180, 180, valinit=0)
+    s_rx = Slider(slider_axes[2], 'Cube Rot X', -180, 180, valinit=0)
 
-    s_tx = Slider(ax_tx, 'Cam X', -5.0, 5.0, valinit=0.5)
-    s_ty = Slider(ax_ty, 'Cam Y', -5.0, 5.0, valinit=0.5)
-    s_tz = Slider(ax_tz, 'Cam Z', -10.0, 0.0, valinit=-3.0)
-    
-    s_rx = Slider(ax_rx, 'Cube Rot X', -180, 180, valinit=0)
-    s_ry = Slider(ax_ry, 'Cube Rot Y', -180, 180, valinit=0)
-    s_rz = Slider(ax_rz, 'Cube Rot Z', -180, 180, valinit=0)
+    s_tz = Slider(slider_axes[3], 'Cam Z', -10.0, 0.0, valinit=-3.0)
+    s_ty = Slider(slider_axes[4], 'Cam Y', -5.0, 5.0, valinit=0.5)
+    s_tx = Slider(slider_axes[5], 'Cam X', -5.0, 5.0, valinit=0.5)
 
+    s_crz = Slider(slider_axes[6], 'Cam Rot Z', -180, 180, valinit=0)
+    s_cry = Slider(slider_axes[7], 'Cam Rot Y', -180, 180, valinit=0)
+    s_crx = Slider(slider_axes[8], 'Cam Rot X', -180, 180, valinit=0)
+
+    s_fy = Slider(slider_axes[9], 'Focal Y', 100, 500, valinit=1.0)
+    s_fx = Slider(slider_axes[10], 'Focal X', 100, 500, valinit=1.0)
+    
     # ***** Order must match unpacking in CubeProjection.__init__ *****
-    sliders_tuple = (s_tx, s_ty, s_tz, s_rx, s_ry, s_rz, s_crx, s_cry, s_crz)
+    sliders_tuple = (s_tx, s_ty, 
+                     s_tz, s_rx, 
+                     s_ry, s_rz, 
+                     s_crx, s_cry, 
+                     s_crz, s_fy, s_fx)
 
     # ***** Create CubeProjection instance *****
     cube_proj = CubeProjection(cube_vertices_world, 
                                cube_edges, 
-                               fx, fy, cx, cy, ax, 
+                               ax, cx, cy, 
                                sliders_tuple)
 
     # ***** Bind slider updates to redraw function *****
