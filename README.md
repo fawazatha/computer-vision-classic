@@ -1,6 +1,6 @@
 # Classic Computer Vision
 
-This repository my exploration and implementation of computer vision algorithms, before transitioning back to deep learning.  
+This repository documents my exploration and implementation of computer vision algorithms, before transitioning back to deep learning.  
 The goal is to understand the foundational concepts and techniques behind computer vision by building them from scratch or using basic libraries.
 
 > 🚧 This project is a work in progress and will continuously evolve as I learn more.
