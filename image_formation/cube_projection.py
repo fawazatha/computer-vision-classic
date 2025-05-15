@@ -1,8 +1,19 @@
 # ***** IMPORT *****
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# ***** IMPORT *****
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 import matplotlib
+
+# ***** IMPORT HELPER *****
+from helper_visualizations.helper_image_processing import (setup_camera_rotation_sliders, 
+                                                           setup_camera_translation_sliders, 
+                                                           setup_cube_rotation_sliders, 
+                                                           setup_focal_length_sliders)
 
 matplotlib.use('TkAgg')  
 
@@ -331,21 +342,11 @@ if __name__ == '__main__':
         slider_axes.append(ax_slider)
 
     # ***** Setup sliders *****
-    s_rz = Slider(slider_axes[0], 'Cube Rot Z', -180, 180, valinit=0)
-    s_ry = Slider(slider_axes[1], 'Cube Rot Y', -180, 180, valinit=0)
-    s_rx = Slider(slider_axes[2], 'Cube Rot X', -180, 180, valinit=0)
+    s_rz, s_ry, s_rx = setup_cube_rotation_sliders(slider_axes)
+    s_tz, s_ty, s_tx = setup_camera_translation_sliders(slider_axes)
+    s_crz, s_cry, s_crx = setup_camera_rotation_sliders(slider_axes)
+    s_fy, s_fx = setup_focal_length_sliders(slider_axes)
 
-    s_tz = Slider(slider_axes[3], 'Cam Z', -10.0, 0.0, valinit=-3.0)
-    s_ty = Slider(slider_axes[4], 'Cam Y', -5.0, 5.0, valinit=0.5)
-    s_tx = Slider(slider_axes[5], 'Cam X', -5.0, 5.0, valinit=0.5)
-
-    s_crz = Slider(slider_axes[6], 'Cam Rot Z', -180, 180, valinit=0)
-    s_cry = Slider(slider_axes[7], 'Cam Rot Y', -180, 180, valinit=0)
-    s_crx = Slider(slider_axes[8], 'Cam Rot X', -180, 180, valinit=0)
-
-    s_fy = Slider(slider_axes[9], 'Focal Y', 100, 500, valinit=250)
-    s_fx = Slider(slider_axes[10], 'Focal X', 100, 500, valinit=250)
-    
     # ***** Order must match unpacking in CubeProjection.__init__ *****
     sliders_tuple = (s_tx, s_ty, 
                      s_tz, s_rx, 
