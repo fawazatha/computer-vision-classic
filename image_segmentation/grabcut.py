@@ -50,19 +50,20 @@ class GrabCut:
         self.mask = np.zeros(self.image.shape[:2], dtype=np.uint8)
         self.mask[self.y:self.y + self.h, self.x:self.x + self.w] = cv.GC_PR_FGD
         
-    def apply_grabcut(self, mode: int = cv.GC_INIT_WITH_RECT) -> None:
+    def apply_grabcut(self, mode: int = cv.GC_INIT_WITH_RECT, itercount: int = 5) -> None:
         """
         Apply GrabCut algorithm to the image using the current mask or ROI.
 
         Args:
             mode (int): GrabCut mode (cv.GC_INIT_WITH_RECT or cv.GC_INIT_WITH_MASK).
+            itercount (int): Number of iterations for GrabCut refinement.
         
         Returns: 
             None
         """
         # ***** Run GrabCut based on selected mode *****
         cv.grabCut(self.image, self.mask, None if mode == cv.GC_INIT_WITH_MASK else self.roi, 
-                   self.bgdModel, self.fgdModel, 5, mode)
+                   self.bgdModel, self.fgdModel, itercount, mode)
         
         if mode == cv.GC_INIT_WITH_RECT: 
             # ***** Save initial mask and visualization before user scribbles *****
