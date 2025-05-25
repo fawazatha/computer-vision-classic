@@ -10,7 +10,7 @@ from matplotlib.widgets import Slider
 import matplotlib
 
 # ***** IMPORT HELPER *****
-from helper_visualizations.helper_image_processing import (setup_camera_rotation_sliders, 
+from helper_visualizations.helper_image_sliders import (setup_camera_rotation_sliders, 
                                                            setup_camera_translation_sliders, 
                                                            setup_cube_rotation_sliders, 
                                                            setup_focal_length_sliders)

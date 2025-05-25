@@ -10,7 +10,7 @@ import matplotlib.pyplot    as plt
 from matplotlib.widgets     import RadioButtons
 
 # ***** IMPORT HELPER *****
-from helper_visualizations.helper_image_processing import sliders_affine, sliders_similarity
+from helper_visualizations.helper_image_sliders import sliders_affine, sliders_similarity
 
 class ImageWarping:
     """ 
