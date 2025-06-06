@@ -113,7 +113,7 @@ class MeanShiftSegment:
         try: 
             self.generate_meanshift()
         except ValueError as error: 
-            print(f"Error generating mean shift image: {e}")
+            print(f"Error generating mean shift image: {error}")
             return
         
         if self.mean_color_segmented_image is None:
